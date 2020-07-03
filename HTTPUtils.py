@@ -73,11 +73,17 @@ class HTTPUtils:
         return session
 
     def __get(self, session, req_args: RequestArgs):
-        response = session.get(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
-        return json.dumps({
-            'status_code': response.status_code,
-            'text': response.text
-        })
+        try:
+            response = session.get(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
+            return json.dumps({
+                'status_code': response.status_code,
+                'text': response.text
+            })
+        except Exception as e:
+            return json.dumps({
+                'status_code': 500,
+                'text': "Error: {}".format(str(e))
+            })
 
     def __post(self, session, req_args: RequestArgs):
         try:
@@ -88,8 +94,8 @@ class HTTPUtils:
             })
         except Exception as e:
             return json.dumps({
-                'status_code': 505,
-                'text': "Server Timeout"
+                'status_code': 500,
+                'text': "Error: {}".format(str(e))
             })
 
     def __put(self, session, req_args: RequestArgs):
@@ -101,16 +107,22 @@ class HTTPUtils:
             })
         except Exception as e:
             return json.dumps({
-                'status_code': 505,
-                'text': "Server Timeout"
+                'status_code': 500,
+                'text': "Error: {}".format(str(e))
             })
 
     def __delete(self, session, req_args: RequestArgs):
-        response = session.delete(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
-        return json.dumps({
-            'status_code': response.status_code,
-            'text': response.text
-        })
+        try:
+            response = session.delete(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
+            return json.dumps({
+                'status_code': response.status_code,
+                'text': response.text
+            })
+        except Exception as e:
+            return json.dumps({
+                'status_code': 500,
+                'text': "Error: {}".format(str(e))
+            })
 
     def __patch(self, session, req_args: RequestArgs):
         try:
@@ -121,8 +133,8 @@ class HTTPUtils:
             })
         except Exception as e:
             return json.dumps({
-                'status_code': 505,
-                'text': "Server Timeout"
+                'status_code': 500,
+                'text': "Error: {}".format(str(e))
             })
 
 
