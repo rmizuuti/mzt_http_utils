@@ -1,0 +1,1 @@
+Python library to make single or parallelized HTTP requests, implementing retries. 
