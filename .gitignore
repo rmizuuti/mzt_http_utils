@@ -6,3 +6,5 @@ build/
 build/*
 dist/
 dist/*
+mzt_http_utils.egg-info/
+mzt_http_utils.egg-info/*
