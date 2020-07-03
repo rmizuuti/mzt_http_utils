@@ -6,11 +6,13 @@ from requests.adapters import HTTPAdapter
 from enum import Enum
 
 
+# Defines the protocol to be used
 class Protocol(str, Enum):
     HTTP = 'http://'
     HTTPS = 'https://'
 
 
+# Defines the HTTP Method to be used
 class HTTPMethod(int, Enum):
     GET = 0
     POST = 1
@@ -19,6 +21,7 @@ class HTTPMethod(int, Enum):
     PATCH = 4
 
 
+# Defines the arguments of the request
 class RequestArgs:
     method: HTTPMethod = HTTPMethod.GET
     protocol: Protocol = Protocol.HTTP
@@ -30,13 +33,16 @@ class RequestArgs:
     headers: dict = None
 
 
+# Class to make parallel calls to HTTP APIs supporting retries
 class HTTPUtils:
 
+    # Initializes the object
     def __init__(self, pool_size=10, retries=5, backoff_factor=0.1):
         retries = Retry(total=retries, backoff_factor=backoff_factor, status_forcelist=[500, 502, 503, 504])
         self.http_adapter = HTTPAdapter(pool_connections=pool_size, max_retries=retries)
         self.executor = ThreadPoolExecutor()
 
+    # Executes a SINGLE call, supporting retries.
     def execute(self, req_args: RequestArgs):
         try:
             session = self.__prepare_session(req_args)
@@ -56,6 +62,7 @@ class HTTPUtils:
                 'text': e.args
             })
 
+    # Executes MULTIPLE calls, in parallel, each one supporting retries.
     def execute_many(self, req_arg_list):
         ret = {}
         for req_args in req_arg_list:
@@ -63,6 +70,7 @@ class HTTPUtils:
             ret.update({req_args.url: future.result()})
         return json.dumps(ret)
 
+    # Prepares the requests.Session
     def __prepare_session(self, req_args: RequestArgs):
         if req_args is None:
             raise HTTPException('RequestArgs cannot be empty')
@@ -72,7 +80,9 @@ class HTTPUtils:
         session.mount(req_args.protocol, self.http_adapter)
         return session
 
-    def __get(self, session, req_args: RequestArgs):
+    # Executes a HTTP GET method
+    @staticmethod
+    def __get(session, req_args: RequestArgs):
         try:
             response = session.get(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
             return json.dumps({
@@ -85,7 +95,9 @@ class HTTPUtils:
                 'text': "Error: {}".format(str(e))
             })
 
-    def __post(self, session, req_args: RequestArgs):
+    # Executes a HTTP POST method
+    @staticmethod
+    def __post(session, req_args: RequestArgs):
         try:
             response = session.post(req_args.url, params=req_args.params, data=req_args.data, json=req_args.json_data, headers=req_args.headers, timeout=req_args.timeout)
             return json.dumps({
@@ -98,7 +110,9 @@ class HTTPUtils:
                 'text': "Error: {}".format(str(e))
             })
 
-    def __put(self, session, req_args: RequestArgs):
+    # Executes a HTTP PUT method
+    @staticmethod
+    def __put(session, req_args: RequestArgs):
         try:
             response = session.put(req_args.url, params=req_args.params, data=req_args.data, json=req_args.json_data, headers=req_args.headers, timeout=req_args.timeout)
             return json.dumps({
@@ -111,7 +125,9 @@ class HTTPUtils:
                 'text': "Error: {}".format(str(e))
             })
 
-    def __delete(self, session, req_args: RequestArgs):
+    # Executes a HTTP DELETE method
+    @staticmethod
+    def __delete(session, req_args: RequestArgs):
         try:
             response = session.delete(req_args.url, params=req_args.params, headers=req_args.headers, timeout=req_args.timeout)
             return json.dumps({
@@ -124,7 +140,9 @@ class HTTPUtils:
                 'text': "Error: {}".format(str(e))
             })
 
-    def __patch(self, session, req_args: RequestArgs):
+    # Executes a HTTP PATCH method
+    @staticmethod
+    def __patch(session, req_args: RequestArgs):
         try:
             response = session.patch(req_args.url, params=req_args.params, data=req_args.data, json=req_args.json_data, headers=req_args.headers, timeout=req_args.timeout)
             return json.dumps({
