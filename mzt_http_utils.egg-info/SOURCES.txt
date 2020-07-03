@@ -1,0 +1,9 @@
+README.md
+setup.py
+mzt_http_utils/HTTPUtils.py
+mzt_http_utils/__init__.py
+mzt_http_utils.egg-info/PKG-INFO
+mzt_http_utils.egg-info/SOURCES.txt
+mzt_http_utils.egg-info/dependency_links.txt
+mzt_http_utils.egg-info/requires.txt
+mzt_http_utils.egg-info/top_level.txt
